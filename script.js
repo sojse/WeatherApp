@@ -15,6 +15,7 @@ function init () {
 
     let coordinates = getCoordinates();
     let weatherInfo = getWeather(coordinates);
+    displayWeather(weatherInfo);
 }
 
 /**
@@ -27,7 +28,7 @@ function getCoordinates() {
     let coordinates = {};
 
     // False means that the request will be synchronous, meaning the data is fully retrieved before the rest of the code runs
-    request.open('GET', 'http://api.openweathermap.org/geo/1.0/direct?q=Malmö&appid=8e741e5447944515dd0d2a32ea8269a0', false);
+    request.open('GET', 'http://api.openweathermap.org/geo/1.0/direct?q=malmö&appid=8e741e5447944515dd0d2a32ea8269a0', false);
 
     //To make the data available to us I add an eventlistener that waits for the data to load
     request.addEventListener('load', () => {
@@ -70,5 +71,28 @@ function getWeather(coordinates) {
     return weatherInfo;
 }
 
+
+/**
+ * Displays the weather information for the user and changes the background and termometer
+ * icon based on the current temperature
+ */
+function displayWeather (weather) {
+    let weatherInfo = document.getElementById('weather-information');
+    let description = weather.weatherDescription;
+    let temperature = weather.temperature;
+    weatherInfo.innerHTML = `${Math.floor(temperature)}&#176;C ${description}`;
+
+    let body = document.getElementsByTagName('body')[0];
+    if (temperature >= 15) {
+        body.className = 'background-warm';
+        document.getElementById('high-temp').style.display = 'block';
+    } else if (temperature <=14 && temperature >= 1) {
+        body.className = 'background-neutral';
+        document.getElementById('neutral-temp').style.display = 'block';
+    } else {
+        body.className = 'background-cold';
+        document.getElementById('low-temp').style.display = 'block';
+    }
+}
 
 init();
