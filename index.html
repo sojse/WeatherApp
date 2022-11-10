@@ -16,14 +16,25 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body class="">
+    <div>
+      <select name="city" id="city">
+        <option value="batman">Batman, Turkey</option>
+        <option value="borås">Borås, Sweden</option>
+        <option value="chicken">Chicken, USA</option>
+        <option value="boring">Boring, Denmark</option>
+        <option value="hell">Hell, USA</option>
+      </select>
+      <button id="showWeatherOnClick">Show current weather</button>
+    </div>
+
     <main>
-      <h1 id="place">The local weather in Malmö, Sweden</h1>
+      <h1 id="weatherInfo"></h1>
 
       <i class="bi bi-thermometer-half" id="neutral-temp"></i>
       <i class="bi bi-thermometer-high" id="high-temp"></i>
       <i class="bi bi-thermometer-snow" id="low-temp"></i>
 
-      <span id="weather-information">11&#176;C sunny</span>
+      <span id="temperatureInfo"></span>
     </main>
   </body>
 </html>

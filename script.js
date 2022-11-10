@@ -1,34 +1,45 @@
 
 /**
  * Used to setup my page and call the other functions that will 
- * get the coordinates and the weather data
+ * set the default background and have an eventlistener that will execute when the
+ * user presses the button
  * It is called once when the script is loaded
  */
 function init () {
-    /**
-     * TODO
-     *  1. Ladda sidan
-     *  2. Hämta koordinater
-     *  3. Hämta väder
-     *  4. Uppdatera sidan
-     */
+    let body = document.getElementsByTagName('body')[0];
+    body.className = 'background-warm';
+    
+    document.getElementById('showWeatherOnClick').addEventListener('click', clickWeatherButton);  
+}
 
-    let coordinates = getCoordinates();
+/**
+ * When the user clicks the weather button the functions to get coordinates, weather and display
+ * output are called. If the user presses the button multiple times the previous temperature icon will 
+ * disapear
+ */
+function clickWeatherButton() {
+    document.getElementById('low-temp').style.display = 'none';
+    document.getElementById('high-temp').style.display = 'none';
+    document.getElementById('neutral-temp').style.display = 'none';
+
+    let city = document.getElementById('city').value;
+    let coordinates = getCoordinates(city);
     let weatherInfo = getWeather(coordinates);
-    displayWeather(weatherInfo);
+    displayTemperature(weatherInfo);
+    displayCity(city);
 }
 
 /**
  * Making a AJAX request to get the location data from the API
  * Returns an object with longitude and lattitude
  */
-function getCoordinates() {
+function getCoordinates(city) {
     //Ajax object constructor that will be used to construct a new HTTP request
     let request = new XMLHttpRequest();
     let coordinates = {};
 
     // False means that the request will be synchronous, meaning the data is fully retrieved before the rest of the code runs
-    request.open('GET', 'http://api.openweathermap.org/geo/1.0/direct?q=malmö&appid=8e741e5447944515dd0d2a32ea8269a0', false);
+    request.open('GET', `http://api.openweathermap.org/geo/1.0/direct?q=${city}&appid=8e741e5447944515dd0d2a32ea8269a0`, false);
 
     //To make the data available to us I add an eventlistener that waits for the data to load
     request.addEventListener('load', () => {
@@ -76,12 +87,12 @@ function getWeather(coordinates) {
  * Displays the weather information for the user and changes the background and termometer
  * icon based on the current temperature
  */
-function displayWeather (weather) {
-    let weatherInfo = document.getElementById('weather-information');
+function displayTemperature (weather) {
+    let temperatureInfo = document.getElementById('temperatureInfo');
     let description = weather.weatherDescription;
     let temperature = weather.temperature;
-    weatherInfo.innerHTML = `${Math.floor(temperature)}&#176;C ${description}`;
-
+    temperatureInfo.innerHTML = `${Math.floor(temperature)}&#176;C ${description}`;     //using innerHTML to get the degree symbol
+    
     let body = document.getElementsByTagName('body')[0];
     if (temperature >= 15) {
         body.className = 'background-warm';
@@ -93,6 +104,25 @@ function displayWeather (weather) {
         body.className = 'background-cold';
         document.getElementById('low-temp').style.display = 'block';
     }
+}
+
+/**
+ * Displays the current city to the user and formats the first letter to upper case 
+ */
+function displayCity (city) {
+    let cityText = document.getElementById('weatherInfo');
+    let country = '';
+    if (city === 'batman') {
+        country = 'Turkey'
+    } else if (city === 'borås') {
+        country = 'Sweden';
+    } else if (city === 'chicken' || city === 'hell') {
+        country = 'USA';
+    } else if (city === 'boring') {
+        country = 'Denmark';
+    }
+
+    cityText.textContent = `The local weather in ${city.charAt(0).toUpperCase() + city.slice(1)}, ${country}`;
 }
 
 init();
