@@ -31,13 +31,7 @@ async function clickWeatherButton() {
  */
  async function getCoordinates (city) {
     let coordinates = {};
-    await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&appid=8e741e5447944515dd0d2a32ea8269a0`)
-    .then((response) => response.json())
-    .then((data) => {
-        coordinates.latitude = data[0].lat;
-        coordinates.longitude = data[0].lon;
-    });
-
+    
     let response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&appid=8e741e5447944515dd0d2a32ea8269a0`);
     if(response.ok) {
         let data = await response.json();
@@ -55,12 +49,6 @@ async function clickWeatherButton() {
  */
 async function getWeather (coordinates) {
     let weatherInfo = {};
-    await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${coordinates.latitude}&lon=${coordinates.longitude}&units=metric&appid=8e741e5447944515dd0d2a32ea8269a0`)
-    .then((response) => response.json())
-    .then((data) => {
-        weatherInfo.weatherDescription = data.weather[0].description;
-        weatherInfo.temperature = data.main.temp;
-    });
 
     let response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${coordinates.latitude}&lon=${coordinates.longitude}&units=metric&appid=8e741e5447944515dd0d2a32ea8269a0`);
     if(response.ok) {
