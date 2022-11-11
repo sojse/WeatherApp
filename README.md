@@ -1,3 +1,3 @@
-# Weather webbsida
+# Weather website
 
-En webbsida som ska visar aktuellet väder och temperatur för vald plats
+Website that displays the current weather to the user based on different city options.
