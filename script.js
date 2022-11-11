@@ -14,15 +14,10 @@ function init () {
 
 /**
  * When the user clicks the weather button the functions to get coordinates, weather and display
- * output are called. If the user presses the button multiple times the previous temperature icon will 
- * disapear
+ * output are called. This is done asynchronous because the other functions are dependent on the
+ * previous to get the correct value for their parameters. 
  */
 async function clickWeatherButton() {
-    document.getElementById('low-temp').style.display = 'none';
-    document.getElementById('high-temp').style.display = 'none';
-    document.getElementById('neutral-temp').style.display = 'none';
-
-
     let city = document.getElementById('city').value;
     let coordinates = await getCoordinates(city);
     let weatherInfo = await getWeather(coordinates);
@@ -31,10 +26,10 @@ async function clickWeatherButton() {
 }
 
 /**
- * Making a AJAX request to fetch the location data from the API
+ * Making a AJAX request to fetch the location data from the API and using async/await
  * Returns an object with longitude and lattitude
  */
-async function getCoordinates (city) {
+ async function getCoordinates (city) {
     let coordinates = {};
     await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&appid=8e741e5447944515dd0d2a32ea8269a0`)
     .then((response) => response.json())
@@ -43,12 +38,20 @@ async function getCoordinates (city) {
         coordinates.longitude = data[0].lon;
     });
 
+    let response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&appid=8e741e5447944515dd0d2a32ea8269a0`);
+    if(response.ok) {
+        let data = await response.json();
+            coordinates.latitude = data[0].lat;
+            coordinates.longitude = data[0].lon;
+    }
+
     return coordinates;
 }
 
 /**
- * Making an AJAX call to fetch the weather data by using the coordinates from getCoordinates
- * The unit used for degrees will be Celsius 
+ * Making an AJAX call to fetch the weather data by using the coordinates from getCoordinates and using async await
+ * The unit used for degrees will be Celsius
+ * Returns an object with a description of the current weather and the current temperature
  */
 async function getWeather (coordinates) {
     let weatherInfo = {};
@@ -58,6 +61,13 @@ async function getWeather (coordinates) {
         weatherInfo.weatherDescription = data.weather[0].description;
         weatherInfo.temperature = data.main.temp;
     });
+
+    let response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${coordinates.latitude}&lon=${coordinates.longitude}&units=metric&appid=8e741e5447944515dd0d2a32ea8269a0`);
+    if(response.ok) {
+        let data = await response.json();
+        weatherInfo.weatherDescription = data.weather[0].description;
+        weatherInfo.temperature = data.main.temp;
+    }
 
     return weatherInfo;
 }
@@ -73,15 +83,16 @@ function displayTemperature (weather) {
     temperatureInfo.innerHTML = `${Math.floor(temperature)}&#176;C ${description}`;     //using innerHTML to get the degree symbol
     
     let body = document.getElementsByTagName('body')[0];
+    let iElement = document.getElementById('icon');
     if (temperature >= 15) {
         body.className = 'background-warm';
-        document.getElementById('high-temp').style.display = 'block';
+        iElement.className = 'bi bi-thermometer-high';
     } else if (temperature <= 0) {
         body.className = 'background-cold';
-        document.getElementById('low-temp').style.display = 'block';        
+        iElement.className = 'bi bi-thermometer-snow';        
     } else {
         body.className = 'background-neutral';
-        document.getElementById('neutral-temp').style.display = 'block';
+        iElement.className = 'bi bi-thermometer-half'
 
     }
 }
